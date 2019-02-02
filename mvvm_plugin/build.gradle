@@ -1,0 +1,62 @@
+apply plugin: 'groovy'
+apply plugin: 'maven' //maven插件
+
+sourceCompatibility = "7"
+targetCompatibility = "7"
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compileOnly 'com.android.tools.build:gradle:3.2.1'
+    compile 'org.ow2.asm:asm:6.2.1'
+    compile 'org.ow2.asm:asm-commons:6.2.1'
+
+    compile 'javassist:javassist:3.12.1.GA'
+    compile 'commons-io:commons-io:2.5'
+}
+
+
+//publish to local directory
+def versionName = "1.0.0"
+group "com.lxm.mvvm.plugin"
+version versionName
+//设置maven deployer
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            //文件发布到下面目录。
+            //此处发布到本地maven仓库 ，如要发布到jcenter，方法相同。
+            repository(url: uri('../release'))
+        }
+    }
+}
+
+task hello {
+    doLast {
+        println("hello")
+    }
+}
+
+task bye {
+    doLast {
+        println("bye")
+    }
+}
+
+//------
+task generateSourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    version = versionName
+    from sourceSets.main.allSource
+}
+
+task generateJavadoc(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    version = versionName
+    from javadoc.destinationDir
+}
